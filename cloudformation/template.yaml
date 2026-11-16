@@ -1,0 +1,467 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Datasoft data lake pilot: Kinesis -> Firehose/S3 + Lambda/DynamoDB,
+  Cognito-protected read API, Glue ETL, Athena catalog, and CloudWatch alerts.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: datasoftlake
+    AllowedPattern: '[a-z][a-z0-9-]{2,14}'
+    Description: Lowercase project prefix for resources and bucket names.
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, test, prod]
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Architectures: [arm64]
+    Timeout: 30
+    MemorySize: 256
+    Tracing: Active
+
+Resources:
+  RawBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub '${ProjectName}-${Environment}-${AWS::AccountId}-${AWS::Region}-raw'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      VersioningConfiguration: {Status: Enabled}
+      OwnershipControls:
+        Rules: [{ObjectOwnership: BucketOwnerEnforced}]
+      Tags: [{Key: Project, Value: !Ref ProjectName}, {Key: Environment, Value: !Ref Environment}]
+
+  RawBucketTransportPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref RawBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyPlainHttp
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: [!GetAtt RawBucket.Arn, !Sub '${RawBucket.Arn}/*']
+            Condition:
+              Bool: {aws:SecureTransport: false}
+
+  CuratedBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub '${ProjectName}-${Environment}-${AWS::AccountId}-${AWS::Region}-curated'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      VersioningConfiguration: {Status: Enabled}
+      OwnershipControls:
+        Rules: [{ObjectOwnership: BucketOwnerEnforced}]
+
+  CuratedBucketTransportPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CuratedBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyPlainHttp
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: [!GetAtt CuratedBucket.Arn, !Sub '${CuratedBucket.Arn}/*']
+            Condition:
+              Bool: {aws:SecureTransport: false}
+
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub '${ProjectName}-${Environment}-${AWS::AccountId}-${AWS::Region}-artifacts'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      VersioningConfiguration: {Status: Enabled}
+      OwnershipControls:
+        Rules: [{ObjectOwnership: BucketOwnerEnforced}]
+
+  ArtifactBucketTransportPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ArtifactBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyPlainHttp
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: [!GetAtt ArtifactBucket.Arn, !Sub '${ArtifactBucket.Arn}/*']
+            Condition:
+              Bool: {aws:SecureTransport: false}
+
+  TelemetryStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-telemetry'
+      ShardCount: 1
+      RetentionPeriodHours: 24
+      StreamEncryption: {EncryptionType: KMS, KeyId: alias/aws/kinesis}
+
+  LatestReadings:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub '${ProjectName}-${Environment}-latest'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - {AttributeName: device_id, AttributeType: S}
+      KeySchema:
+        - {AttributeName: device_id, KeyType: HASH}
+      PointInTimeRecoverySpecification: {PointInTimeRecoveryEnabled: true}
+      SSESpecification: {SSEEnabled: true}
+
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${ProjectName}-${Environment}-alerts'
+
+  Processor:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-${Environment}-process-telemetry'
+      Handler: telemetry_processor.app.lambda_handler
+      CodeUri: ../src/
+      Environment:
+        Variables:
+          LATEST_TABLE_NAME: !Ref LatestReadings
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:PutItem]
+              Resource: !GetAtt LatestReadings.Arn
+            - Effect: Allow
+              Action: [kinesis:DescribeStream, kinesis:DescribeStreamSummary, kinesis:GetRecords, kinesis:GetShardIterator, kinesis:ListShards]
+              Resource: !GetAtt TelemetryStream.Arn
+      Events:
+        Telemetry:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt TelemetryStream.Arn
+            StartingPosition: LATEST
+            BatchSize: 100
+            MaximumRetryAttempts: 3
+            MaximumRecordAgeInSeconds: 3600
+            FunctionResponseTypes: [ReportBatchItemFailures]
+
+  ProcessorLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${ProjectName}-${Environment}-process-telemetry'
+      RetentionInDays: 14
+
+  ReadLatest:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-${Environment}-read-latest'
+      Handler: query_api.app.lambda_handler
+      CodeUri: ../src/
+      Environment:
+        Variables:
+          LATEST_TABLE_NAME: !Ref LatestReadings
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem]
+              Resource: !GetAtt LatestReadings.Arn
+
+  ReadLatestLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${ProjectName}-${Environment}-read-latest'
+      RetentionInDays: 14
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub '${ProjectName}-${Environment}-users'
+      AdminCreateUserConfig: {AllowAdminCreateUserOnly: true}
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 12
+          RequireLowercase: true
+          RequireUppercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      ClientName: !Sub '${ProjectName}-${Environment}-cli'
+      GenerateSecret: false
+      ExplicitAuthFlows: [ALLOW_USER_PASSWORD_AUTH, ALLOW_REFRESH_TOKEN_AUTH]
+
+  HttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-read-api'
+      ProtocolType: HTTP
+
+  JwtAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      ApiId: !Ref HttpApi
+      AuthorizerType: JWT
+      Name: CognitoJwt
+      IdentitySource: ['$request.header.Authorization']
+      JwtConfiguration:
+        Audience: [!Ref UserPoolClient]
+        Issuer: !Sub 'https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}'
+
+  ReadIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt ReadLatest.Arn
+      PayloadFormatVersion: '2.0'
+
+  ReadRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: 'GET /devices/{device_id}/latest'
+      Target: !Sub 'integrations/${ReadIntegration}'
+      AuthorizationType: JWT
+      AuthorizerId: !Ref JwtAuthorizer
+
+  ApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/apigateway/${ProjectName}-${Environment}-read-api'
+      RetentionInDays: 14
+
+  ApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref HttpApi
+      StageName: '$default'
+      AutoDeploy: true
+      AccessLogSettings:
+        DestinationArn: !GetAtt ApiAccessLogGroup.Arn
+        Format: '{"requestId":"$context.requestId","status":"$context.status","route":"$context.routeKey","responseLength":"$context.responseLength"}'
+
+  ApiInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt ReadLatest.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/GET/devices/*/latest'
+
+  FirehoseLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/kinesisfirehose/${ProjectName}-${Environment}-raw'
+      RetentionInDays: 14
+
+  FirehoseLogStream:
+    Type: AWS::Logs::LogStream
+    Properties:
+      LogGroupName: !Ref FirehoseLogGroup
+      LogStreamName: S3Delivery
+
+  FirehoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: firehose.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: FirehoseReadWrite
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [kinesis:DescribeStream, kinesis:DescribeStreamSummary, kinesis:GetShardIterator, kinesis:GetRecords, kinesis:ListShards]
+                Resource: !GetAtt TelemetryStream.Arn
+              - Effect: Allow
+                Action: [s3:GetBucketLocation, s3:ListBucket, s3:ListBucketMultipartUploads]
+                Resource: !GetAtt RawBucket.Arn
+              - Effect: Allow
+                Action: [s3:PutObject, s3:AbortMultipartUpload]
+                Resource: !Sub '${RawBucket.Arn}/*'
+              - Effect: Allow
+                Action: [logs:PutLogEvents]
+                Resource: !GetAtt FirehoseLogGroup.Arn
+              - Effect: Allow
+                Action: [kms:Decrypt, kms:GenerateDataKey]
+                Resource: !Sub 'arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/*'
+                Condition:
+                  StringEquals: {kms:ViaService: !Sub 'kinesis.${AWS::Region}.amazonaws.com'}
+
+  RawDelivery:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub '${ProjectName}-${Environment}-to-s3'
+      DeliveryStreamType: KinesisStreamAsSource
+      KinesisStreamSourceConfiguration:
+        KinesisStreamARN: !GetAtt TelemetryStream.Arn
+        RoleARN: !GetAtt FirehoseRole.Arn
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !GetAtt RawBucket.Arn
+        RoleARN: !GetAtt FirehoseRole.Arn
+        Prefix: 'raw/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/'
+        ErrorOutputPrefix: 'errors/!{firehose:error-output-type}/'
+        BufferingHints: {IntervalInSeconds: 60, SizeInMBs: 5}
+        CompressionFormat: GZIP
+        CloudWatchLoggingOptions:
+          Enabled: true
+          LogGroupName: !Ref FirehoseLogGroup
+          LogStreamName: !Ref FirehoseLogStream
+
+  StreamIteratorAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Kinesis record processing is more than 5 minutes behind
+      Namespace: AWS/Lambda
+      MetricName: IteratorAge
+      Dimensions:
+        - {Name: FunctionName, Value: !Ref Processor}
+      Statistic: Maximum
+      Period: 60
+      EvaluationPeriods: 2
+      Threshold: 300000
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+
+  ProcessorErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Processor Lambda errors over a 5-minute period
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - {Name: FunctionName, Value: !Ref Processor}
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: !Sub '${ProjectName}_${Environment}_curated'
+        Description: Curated Parquet datasets for Athena
+
+  GlueRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: glue.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSGlueServiceRole'
+      Policies:
+        - PolicyName: LakeData
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [s3:ListBucket, s3:GetBucketLocation]
+                Resource: [!GetAtt RawBucket.Arn, !GetAtt CuratedBucket.Arn, !GetAtt ArtifactBucket.Arn]
+              - Effect: Allow
+                Action: [s3:GetObject]
+                Resource: [!Sub '${RawBucket.Arn}/*', !Sub '${CuratedBucket.Arn}/*', !Sub '${ArtifactBucket.Arn}/*']
+              - Effect: Allow
+                Action: [s3:PutObject, s3:DeleteObject]
+                Resource: [!Sub '${CuratedBucket.Arn}/*', !Sub '${ArtifactBucket.Arn}/*']
+
+  TransformJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-transform'
+      Role: !GetAtt GlueRole.Arn
+      GlueVersion: '5.0'
+      WorkerType: G.1X
+      NumberOfWorkers: 2
+      Timeout: 15
+      MaxRetries: 0
+      Command:
+        Name: glueetl
+        PythonVersion: '3'
+        ScriptLocation: !Sub 's3://${ArtifactBucket}/glue/transform_telemetry.py'
+      DefaultArguments:
+        '--job-language': python
+        '--job-bookmark-option': job-bookmark-enable
+        '--enable-metrics': 'true'
+        '--RAW_BUCKET': !Ref RawBucket
+        '--CURATED_BUCKET': !Ref CuratedBucket
+        '--TempDir': !Sub 's3://${ArtifactBucket}/glue-temp/'
+
+  CuratedCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-curated-crawler'
+      Role: !GetAtt GlueRole.Arn
+      DatabaseName: !Ref GlueDatabase
+      Targets:
+        S3Targets:
+          - Path: !Sub 's3://${CuratedBucket}/telemetry/'
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+
+Outputs:
+  RawBucketName: {Value: !Ref RawBucket}
+  CuratedBucketName: {Value: !Ref CuratedBucket}
+  ArtifactBucketName: {Value: !Ref ArtifactBucket}
+  TelemetryStreamName: {Value: !Ref TelemetryStream}
+  LatestTableName: {Value: !Ref LatestReadings}
+  GlueJobName: {Value: !Ref TransformJob}
+  GlueCrawlerName: {Value: !Ref CuratedCrawler}
+  GlueDatabaseName: {Value: !Ref GlueDatabase}
+  CognitoUserPoolId: {Value: !Ref UserPool}
+  CognitoClientId: {Value: !Ref UserPoolClient}
+  ApiUrl: {Value: !Sub 'https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}'}
+  AlertTopicArn: {Value: !Ref AlertTopic}

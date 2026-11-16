@@ -1,0 +1,3 @@
+{"event_id":"demo-001","device_id":"vehicle-001","event_time":"2026-11-16T09:00:00Z","speed_kmh":55.7,"fuel_percent":73.1,"diagnostic_codes":[]}
+{"event_id":"demo-002","device_id":"vehicle-002","event_time":"2026-11-16T09:01:00Z","speed_kmh":42.2,"fuel_percent":61.5,"diagnostic_codes":["P0300"]}
+{"event_id":"demo-003","device_id":"vehicle-001","event_time":"2026-11-16T09:02:00Z","speed_kmh":62.5,"fuel_percent":72.8,"diagnostic_codes":[]}

@@ -1,0 +1,44 @@
+name: Validate data lake project
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Verify source files, image inventory and template structure
+        run: python scripts/check_project.py
+
+  sam-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install SAM CLI
+        run: python -m pip install aws-sam-cli cfn-lint
+      - name: Validate CloudFormation / SAM syntax
+        run: sam validate --template-file cloudformation/template.yaml --lint
+        # This is static validation only. No AWS deployment or credentials.
+
+  docker-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run local test image
+        run: docker compose run --build --rm tests

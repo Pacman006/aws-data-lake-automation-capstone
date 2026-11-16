@@ -1,0 +1,639 @@
+[
+  {
+    "source": "assignment",
+    "source_page": 1,
+    "file": "docs/images/original/assignment_p01_01.jpeg",
+    "width": 375,
+    "height": 323
+  },
+  {
+    "source": "assignment",
+    "source_page": 1,
+    "file": "docs/images/original/assignment_p01_02.png",
+    "width": 1544,
+    "height": 183
+  },
+  {
+    "source": "assignment",
+    "source_page": 4,
+    "file": "docs/images/original/assignment_p04_01.jpeg",
+    "width": 1590,
+    "height": 897
+  },
+  {
+    "source": "student-report",
+    "source_page": 2,
+    "file": "docs/images/original/student-report_p02_01.png",
+    "width": 948,
+    "height": 498
+  },
+  {
+    "source": "student-report",
+    "source_page": 2,
+    "file": "docs/images/original/student-report_p02_02.png",
+    "width": 944,
+    "height": 496
+  },
+  {
+    "source": "student-report",
+    "source_page": 3,
+    "file": "docs/images/original/student-report_p03_01.png",
+    "width": 946,
+    "height": 497
+  },
+  {
+    "source": "student-report",
+    "source_page": 3,
+    "file": "docs/images/original/student-report_p03_02.jpeg",
+    "width": 959,
+    "height": 504
+  },
+  {
+    "source": "student-report",
+    "source_page": 3,
+    "file": "docs/images/original/student-report_p03_03.png",
+    "width": 972,
+    "height": 511
+  },
+  {
+    "source": "student-report",
+    "source_page": 4,
+    "file": "docs/images/original/student-report_p04_01.jpeg",
+    "width": 952,
+    "height": 500
+  },
+  {
+    "source": "student-report",
+    "source_page": 4,
+    "file": "docs/images/original/student-report_p04_02.png",
+    "width": 959,
+    "height": 504
+  },
+  {
+    "source": "student-report",
+    "source_page": 4,
+    "file": "docs/images/original/student-report_p04_03.png",
+    "width": 974,
+    "height": 512
+  },
+  {
+    "source": "student-report",
+    "source_page": 4,
+    "file": "docs/images/original/student-report_p04_04.png",
+    "width": 974,
+    "height": 512
+  },
+  {
+    "source": "student-report",
+    "source_page": 5,
+    "file": "docs/images/original/student-report_p05_01.png",
+    "width": 1151,
+    "height": 608
+  },
+  {
+    "source": "student-report",
+    "source_page": 5,
+    "file": "docs/images/original/student-report_p05_02.jpeg",
+    "width": 1133,
+    "height": 598
+  },
+  {
+    "source": "student-report",
+    "source_page": 6,
+    "file": "docs/images/original/student-report_p06_01.png",
+    "width": 1133,
+    "height": 598
+  },
+  {
+    "source": "student-report",
+    "source_page": 6,
+    "file": "docs/images/original/student-report_p06_02.png",
+    "width": 1130,
+    "height": 596
+  },
+  {
+    "source": "student-report",
+    "source_page": 6,
+    "file": "docs/images/original/student-report_p06_03.png",
+    "width": 1059,
+    "height": 559
+  },
+  {
+    "source": "student-report",
+    "source_page": 7,
+    "file": "docs/images/original/student-report_p07_01.png",
+    "width": 1154,
+    "height": 609
+  },
+  {
+    "source": "student-report",
+    "source_page": 7,
+    "file": "docs/images/original/student-report_p07_02.png",
+    "width": 1139,
+    "height": 601
+  },
+  {
+    "source": "student-report",
+    "source_page": 7,
+    "file": "docs/images/original/student-report_p07_03.png",
+    "width": 1124,
+    "height": 593
+  },
+  {
+    "source": "student-report",
+    "source_page": 8,
+    "file": "docs/images/original/student-report_p08_01.png",
+    "width": 1106,
+    "height": 584
+  },
+  {
+    "source": "student-report",
+    "source_page": 9,
+    "file": "docs/images/original/student-report_p09_01.png",
+    "width": 1187,
+    "height": 626
+  },
+  {
+    "source": "student-report",
+    "source_page": 9,
+    "file": "docs/images/original/student-report_p09_02.png",
+    "width": 1148,
+    "height": 606
+  },
+  {
+    "source": "student-report",
+    "source_page": 10,
+    "file": "docs/images/original/student-report_p10_01.png",
+    "width": 990,
+    "height": 523
+  },
+  {
+    "source": "student-report",
+    "source_page": 12,
+    "file": "docs/images/original/student-report_p12_01.png",
+    "width": 1095,
+    "height": 578
+  },
+  {
+    "source": "student-report",
+    "source_page": 12,
+    "file": "docs/images/original/student-report_p12_02.png",
+    "width": 1098,
+    "height": 579
+  },
+  {
+    "source": "student-report",
+    "source_page": 12,
+    "file": "docs/images/original/student-report_p12_03.jpeg",
+    "width": 1127,
+    "height": 608
+  },
+  {
+    "source": "student-report",
+    "source_page": 13,
+    "file": "docs/images/original/student-report_p13_01.jpeg",
+    "width": 1151,
+    "height": 607
+  },
+  {
+    "source": "student-report",
+    "source_page": 13,
+    "file": "docs/images/original/student-report_p13_02.jpeg",
+    "width": 1159,
+    "height": 601
+  },
+  {
+    "source": "student-report",
+    "source_page": 14,
+    "file": "docs/images/original/student-report_p14_01.jpeg",
+    "width": 1181,
+    "height": 601
+  },
+  {
+    "source": "student-report",
+    "source_page": 14,
+    "file": "docs/images/original/student-report_p14_02.png",
+    "width": 1155,
+    "height": 558
+  },
+  {
+    "source": "student-report",
+    "source_page": 14,
+    "file": "docs/images/original/student-report_p14_03.png",
+    "width": 716,
+    "height": 584
+  },
+  {
+    "source": "student-report",
+    "source_page": 16,
+    "file": "docs/images/original/student-report_p16_01.jpeg",
+    "width": 1035,
+    "height": 458
+  },
+  {
+    "source": "student-report",
+    "source_page": 16,
+    "file": "docs/images/original/student-report_p16_02.jpeg",
+    "width": 1050,
+    "height": 459
+  },
+  {
+    "source": "student-report",
+    "source_page": 16,
+    "file": "docs/images/original/student-report_p16_03.png",
+    "width": 1053,
+    "height": 464
+  },
+  {
+    "source": "student-report",
+    "source_page": 17,
+    "file": "docs/images/original/student-report_p17_01.png",
+    "width": 1053,
+    "height": 463
+  },
+  {
+    "source": "student-report",
+    "source_page": 17,
+    "file": "docs/images/original/student-report_p17_02.jpeg",
+    "width": 1050,
+    "height": 454
+  },
+  {
+    "source": "student-report",
+    "source_page": 17,
+    "file": "docs/images/original/student-report_p17_03.jpeg",
+    "width": 1059,
+    "height": 452
+  },
+  {
+    "source": "student-report",
+    "source_page": 17,
+    "file": "docs/images/original/student-report_p17_04.jpeg",
+    "width": 1084,
+    "height": 469
+  },
+  {
+    "source": "student-report",
+    "source_page": 18,
+    "file": "docs/images/original/student-report_p18_01.jpeg",
+    "width": 1038,
+    "height": 488
+  },
+  {
+    "source": "student-report",
+    "source_page": 18,
+    "file": "docs/images/original/student-report_p18_02.jpeg",
+    "width": 1074,
+    "height": 505
+  },
+  {
+    "source": "student-report",
+    "source_page": 18,
+    "file": "docs/images/original/student-report_p18_03.jpeg",
+    "width": 1087,
+    "height": 505
+  },
+  {
+    "source": "student-report",
+    "source_page": 18,
+    "file": "docs/images/original/student-report_p18_04.jpeg",
+    "width": 1093,
+    "height": 500
+  },
+  {
+    "source": "student-report",
+    "source_page": 19,
+    "file": "docs/images/original/student-report_p19_01.jpeg",
+    "width": 1100,
+    "height": 505
+  },
+  {
+    "source": "student-report",
+    "source_page": 19,
+    "file": "docs/images/original/student-report_p19_02.jpeg",
+    "width": 1107,
+    "height": 505
+  },
+  {
+    "source": "student-report",
+    "source_page": 19,
+    "file": "docs/images/original/student-report_p19_03.jpeg",
+    "width": 1148,
+    "height": 533
+  },
+  {
+    "source": "student-report",
+    "source_page": 19,
+    "file": "docs/images/original/student-report_p19_04.jpeg",
+    "width": 943,
+    "height": 429
+  },
+  {
+    "source": "student-report",
+    "source_page": 20,
+    "file": "docs/images/original/student-report_p20_01.png",
+    "width": 920,
+    "height": 453
+  },
+  {
+    "source": "student-report",
+    "source_page": 20,
+    "file": "docs/images/original/student-report_p20_02.jpeg",
+    "width": 925,
+    "height": 456
+  },
+  {
+    "source": "student-report",
+    "source_page": 20,
+    "file": "docs/images/original/student-report_p20_03.jpeg",
+    "width": 906,
+    "height": 438
+  },
+  {
+    "source": "student-report",
+    "source_page": 20,
+    "file": "docs/images/original/student-report_p20_04.png",
+    "width": 904,
+    "height": 455
+  },
+  {
+    "source": "student-report",
+    "source_page": 21,
+    "file": "docs/images/original/student-report_p21_01.png",
+    "width": 939,
+    "height": 484
+  },
+  {
+    "source": "student-report",
+    "source_page": 21,
+    "file": "docs/images/original/student-report_p21_02.png",
+    "width": 923,
+    "height": 462
+  },
+  {
+    "source": "student-report",
+    "source_page": 21,
+    "file": "docs/images/original/student-report_p21_03.png",
+    "width": 892,
+    "height": 482
+  },
+  {
+    "source": "student-report",
+    "source_page": 21,
+    "file": "docs/images/original/student-report_p21_04.jpeg",
+    "width": 898,
+    "height": 461
+  },
+  {
+    "source": "student-report",
+    "source_page": 22,
+    "file": "docs/images/original/student-report_p22_01.jpeg",
+    "width": 868,
+    "height": 454
+  },
+  {
+    "source": "student-report",
+    "source_page": 22,
+    "file": "docs/images/original/student-report_p22_02.png",
+    "width": 860,
+    "height": 434
+  },
+  {
+    "source": "student-report",
+    "source_page": 22,
+    "file": "docs/images/original/student-report_p22_03.jpeg",
+    "width": 862,
+    "height": 453
+  },
+  {
+    "source": "student-report",
+    "source_page": 22,
+    "file": "docs/images/original/student-report_p22_04.jpeg",
+    "width": 854,
+    "height": 439
+  },
+  {
+    "source": "student-report",
+    "source_page": 23,
+    "file": "docs/images/original/student-report_p23_01.jpeg",
+    "width": 850,
+    "height": 443
+  },
+  {
+    "source": "student-report",
+    "source_page": 23,
+    "file": "docs/images/original/student-report_p23_02.jpeg",
+    "width": 856,
+    "height": 449
+  },
+  {
+    "source": "student-report",
+    "source_page": 23,
+    "file": "docs/images/original/student-report_p23_03.jpeg",
+    "width": 832,
+    "height": 426
+  },
+  {
+    "source": "student-report",
+    "source_page": 24,
+    "file": "docs/images/original/student-report_p24_01.jpeg",
+    "width": 835,
+    "height": 373
+  },
+  {
+    "source": "student-report",
+    "source_page": 24,
+    "file": "docs/images/original/student-report_p24_02.jpeg",
+    "width": 846,
+    "height": 380
+  },
+  {
+    "source": "student-report",
+    "source_page": 24,
+    "file": "docs/images/original/student-report_p24_03.jpeg",
+    "width": 854,
+    "height": 372
+  },
+  {
+    "source": "student-report",
+    "source_page": 24,
+    "file": "docs/images/original/student-report_p24_04.jpeg",
+    "width": 862,
+    "height": 379
+  },
+  {
+    "source": "student-report",
+    "source_page": 24,
+    "file": "docs/images/original/student-report_p24_05.jpeg",
+    "width": 874,
+    "height": 387
+  },
+  {
+    "source": "student-report",
+    "source_page": 25,
+    "file": "docs/images/original/student-report_p25_01.jpeg",
+    "width": 870,
+    "height": 384
+  },
+  {
+    "source": "student-report",
+    "source_page": 25,
+    "file": "docs/images/original/student-report_p25_02.jpeg",
+    "width": 866,
+    "height": 382
+  },
+  {
+    "source": "student-report",
+    "source_page": 25,
+    "file": "docs/images/original/student-report_p25_03.png",
+    "width": 880,
+    "height": 387
+  },
+  {
+    "source": "student-report",
+    "source_page": 25,
+    "file": "docs/images/original/student-report_p25_04.jpeg",
+    "width": 888,
+    "height": 392
+  },
+  {
+    "source": "student-report",
+    "source_page": 25,
+    "file": "docs/images/original/student-report_p25_05.jpeg",
+    "width": 891,
+    "height": 443
+  },
+  {
+    "source": "student-report",
+    "source_page": 26,
+    "file": "docs/images/original/student-report_p26_01.jpeg",
+    "width": 891,
+    "height": 419
+  },
+  {
+    "source": "student-report",
+    "source_page": 26,
+    "file": "docs/images/original/student-report_p26_02.jpeg",
+    "width": 884,
+    "height": 387
+  },
+  {
+    "source": "student-report",
+    "source_page": 26,
+    "file": "docs/images/original/student-report_p26_03.jpeg",
+    "width": 1054,
+    "height": 481
+  },
+  {
+    "source": "student-report",
+    "source_page": 27,
+    "file": "docs/images/original/student-report_p27_01.jpeg",
+    "width": 1009,
+    "height": 522
+  },
+  {
+    "source": "student-report",
+    "source_page": 27,
+    "file": "docs/images/original/student-report_p27_02.jpeg",
+    "width": 1008,
+    "height": 514
+  },
+  {
+    "source": "student-report",
+    "source_page": 27,
+    "file": "docs/images/original/student-report_p27_03.png",
+    "width": 1015,
+    "height": 527
+  },
+  {
+    "source": "student-report",
+    "source_page": 28,
+    "file": "docs/images/original/student-report_p28_01.png",
+    "width": 1010,
+    "height": 521
+  },
+  {
+    "source": "student-report",
+    "source_page": 28,
+    "file": "docs/images/original/student-report_p28_02.jpeg",
+    "width": 1007,
+    "height": 531
+  },
+  {
+    "source": "student-report",
+    "source_page": 28,
+    "file": "docs/images/original/student-report_p28_03.png",
+    "width": 995,
+    "height": 540
+  },
+  {
+    "source": "student-report",
+    "source_page": 29,
+    "file": "docs/images/original/student-report_p29_01.jpeg",
+    "width": 994,
+    "height": 524
+  },
+  {
+    "source": "student-report",
+    "source_page": 29,
+    "file": "docs/images/original/student-report_p29_02.jpeg",
+    "width": 1001,
+    "height": 518
+  },
+  {
+    "source": "student-report",
+    "source_page": 29,
+    "file": "docs/images/original/student-report_p29_03.jpeg",
+    "width": 1012,
+    "height": 527
+  },
+  {
+    "source": "student-report",
+    "source_page": 30,
+    "file": "docs/images/original/student-report_p30_01.jpeg",
+    "width": 1012,
+    "height": 529
+  },
+  {
+    "source": "student-report",
+    "source_page": 30,
+    "file": "docs/images/original/student-report_p30_02.jpeg",
+    "width": 1010,
+    "height": 529
+  },
+  {
+    "source": "student-report",
+    "source_page": 30,
+    "file": "docs/images/original/student-report_p30_03.jpeg",
+    "width": 1007,
+    "height": 526
+  },
+  {
+    "source": "student-report",
+    "source_page": 31,
+    "file": "docs/images/original/student-report_p31_01.jpeg",
+    "width": 1006,
+    "height": 541
+  },
+  {
+    "source": "student-report",
+    "source_page": 31,
+    "file": "docs/images/original/student-report_p31_02.jpeg",
+    "width": 1002,
+    "height": 520
+  },
+  {
+    "source": "student-report",
+    "source_page": 31,
+    "file": "docs/images/original/student-report_p31_03.jpeg",
+    "width": 993,
+    "height": 521
+  },
+  {
+    "source": "student-report",
+    "source_page": 32,
+    "file": "docs/images/original/student-report_p32_01.png",
+    "width": 987,
+    "height": 514
+  }
+]
